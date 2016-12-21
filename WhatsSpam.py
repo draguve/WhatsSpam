@@ -1,35 +1,31 @@
+"""Usage: WhatsSpam.py
+          WhatsSpam.py [--recipients=ListFile] [--message=MessageFile] [--skipcheck] [--times=NoOfTimes] [--delay=Seconds]
+
+Options:
+  -h --help                                   shows the help screen
+  -r ListFile --recipients=ListFile           to import recipients from file
+  -m MessageFile --message=MessageFile        to import message frome file
+  -s --skipcheck                              to skip checks if right person is selected
+  -t NoOfTimes --times=NoOfTimes              No Of Times To Send The Message
+  -d Seconds --delay=Seconds                  delay between the messages in seconds(Default 0)
+"""
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 import urllib2,os,zipfile
 import platform
+from docopt import docopt
+import time
 
-def executeChromeWhatsapp():
-
-    if(platform.system()=="Windows"):
-        if (not (os.path.isfile('./chromedriver.exe'))):
-            print "ChromeDriver.exe Not Found,Downloading It"
-            if(not(downloadChromeDriver())):
-                print "Could Not Download the Driver Please Press Anykey to exit"
-                exit()
-    else:
-        print "This is Not Usable on Your Machine Please Use a Windows One"
-        raw_input("Press Anykey To Exit")
+def executeMultipleSpam():
+    if(not(driverExeCheck())):
         exit()
     b = webdriver.Chrome("chromedriver")
     b.get('http://web.whatsapp.com')
-    Name, Times, Message = askQuestions()
-    searchbar = b.find_element_by_xpath('//*[@id="side"]/div[2]/div/label/input')
-    searchbar.click()
-    searchbar.send_keys(Name)
-    elem = b.find_element_by_xpath('//span[contains(text(),"%s")]' % Name)
-    elem.click()
-    print "Please Check Weather The Correct Person Is Selected"
-    raw_input("Press Any Key To Continue ")
-    elem1 = b.find_elements_by_class_name('input')
-    for i in range(0,Times):
-        elem1[1].send_keys(Message)
-        b.find_element_by_class_name('send-container').click()
-    raw_input("Press Any Key After The Messages Are Sent")
-    b.close()
+    print "Log Into WhatsApp with the QRCode"
+    raw_input("Press Any Key After Logging in")
+    spamMultiple(b)
+    b.close
+
 
 def downloadFile(url):
 
@@ -60,15 +56,27 @@ def extractAndDelete(file_name):
     os.remove(file_name)
 
 def askQuestions():
-    print "Log Into WhatsApp with the QRCode"
-    raw_input("Press Any Key After Logging in")
-    print "Input Name Of Your 'Friend'"
-    Name = raw_input(">>>")
-    print "No of times to send the message?"
-    Times = int(raw_input(">>>"))
-    print "What to Send Them?"
-    Message = raw_input(">>>")
-    return Name,Times,Message
+
+    if(not(arguments["--recipients"]==None) and os.path.isfile(arguments["--recipients"])):
+        Names = getNamesFromFile(arguments["--recipients"])
+    else:
+        print "Please Insert Names Of People to be Spamed(Seperated by a ',' if Multiple Names)"
+        Names = raw_input(">>>")
+        Names = Names.split(',')
+
+    if(arguments["--times"]==None):
+        print "No of times to send the message?"
+        Times = int(raw_input(">>>"))
+    else:
+        Times = int(arguments["--times"])
+
+    if(not(arguments["--message"]==None) and os.path.isfile(arguments["--message"])):
+        Message = readFromFile(arguments['--message'])
+    else:
+        print "What to Send Them?"
+        Message = raw_input(">>>")
+
+    return Names,Times,Message
 
 def downloadChromeDriver():
     downloadFile("https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
@@ -93,5 +101,68 @@ def checkIfInClear(driverLoc):
     else:
         return False
 
+def driverExeCheck():
+        if(platform.system()=="Windows"):
+            if (not (os.path.isfile('./chromedriver.exe'))):
+                print "ChromeDriver.exe Not Found,Downloading It"
+                if(not(downloadChromeDriver())):
+                    print "Could Not Download the Driver Please Press Anykey to exit"
+                    return False
+        else:
+            print "This is Not Usable on Your Machine Please Use a Windows One"
+            raw_input("Press Anykey To Exit")
+            return False
+        return True
+
+
+def spamGuy(b,Name,Times,Message):
+    searchbar = b.find_element_by_xpath('//*[@id="side"]/div[2]/div/label/input')
+    searchbar.clear()
+    searchbar.click()
+    searchbar.send_keys(Name)
+    elem = b.find_element_by_xpath('//span[contains(text(),"%s")]' % Name)
+    elem.click()
+    if(not(arguments["--skipcheck"])):
+        print "Please Check Weather The Correct Person Is Selected"
+        raw_input("Press Any Key To Continue ")
+    elem1 = b.find_elements_by_class_name('input')
+    for i in range(0,Times):
+        sendByLines(Message,elem1[1])
+        elem1[1].send_keys('\n')
+        if(not(arguments["--delay"]==None)):
+            time.sleep(int(arguments["--delay"]))
+    if(not(arguments["--skipcheck"])):
+        raw_input("Press Any Key After The Messages Are Sent")
+    else:
+        time.sleep(2)
+
+def sendByLines(Message,element):
+    lineList = Message.splitlines()
+    for line in lineList:
+        element.send_keys(line)
+        element.send_keys(Keys.SHIFT+Keys.ENTER)
+
+def spamMultiple(b):
+    Names,Times,Message = askQuestions()
+    for name in Names:
+        nameToUse = name.replace('\n', '').replace('\r', '')
+        spamGuy(b,nameToUse,Times,Message)
+
+def readFromFile(fileToRead):
+    print "opening from %s" % fileToRead
+    toRead = open(fileToRead,"r+")
+    toReturn = toRead.read()
+    return toReturn
+
+def getNamesFromFile(filename):
+    textInside = readFromFile(filename)
+    nameList = textInside.replace('\r','').split('\n')
+    for index,name in enumerate(nameList):
+        if name=="":
+            nameList.pop(index)
+    print nameList
+    return nameList
+
 if __name__ == "__main__":
-    executeChromeWhatsapp()
+    arguments = docopt(__doc__)
+    executeMultipleSpam()
