@@ -125,10 +125,10 @@ def spamGuy(b,Name,Times,Message):
     if(not(arguments["--skipcheck"])):
         print "Please Check Weather The Correct Person Is Selected"
         raw_input("Press Any Key To Continue ")
-    elem1 = b.find_elements_by_class_name('input')
+    elem1 = b.find_element_by_xpath('//*[@id="main"]/footer/div[1]/div[2]/div/div[2]')
     for i in range(0,Times):
-        sendByLines(Message,elem1[1])
-        elem1[1].send_keys('\n')
+        sendByLines(Message,elem1)
+        elem1.send_keys('\n')
         if(not(arguments["--delay"]==None)):
             time.sleep(int(arguments["--delay"]))
     if(not(arguments["--skipcheck"])):
