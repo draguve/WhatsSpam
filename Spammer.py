@@ -3,7 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-#from localstorage import LocalStorage
+from selenium.common.exceptions import TimeoutException
 import pickle
 import json
 
@@ -27,7 +27,7 @@ class Wspammer:
             self.driver.refresh()
 
     def spam_person(self, contact, message, times):
-        wait = WebDriverWait(self.driver, 600)
+        wait = WebDriverWait(self.driver,120)
         y_arg = '//*[@id="side"]/div[2]/div/label/input'
         input_y = wait.until(EC.presence_of_element_located((By.XPATH, y_arg)))
         input_y.send_keys(contact + Keys.ENTER)
@@ -35,6 +35,20 @@ class Wspammer:
             '//*[@id="main"]/footer/div[1]/div[2]/div/div[2]')
         for i in range(int(times)):
             input_box.send_keys(message + Keys.ENTER)
+
+    def is_logged_in(self):
+        check = self.storage.get("logout-token")
+        wait = WebDriverWait(self.driver,60)
+        if check!=None:
+            try:
+                y_arg = '//*[@id="side"]/div[2]/div/label/input'
+                wait.until(EC.presence_of_element_located((By.XPATH, y_arg)))
+                return True
+            except TimeoutException:
+                print("either not connected to the internet,or is logged out")
+                return False
+        else:
+            return False
 
 
 class LocalStorage:
