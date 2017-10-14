@@ -7,6 +7,7 @@ from selenium.common.exceptions import TimeoutException
 import pickle
 import json
 
+
 class Wspammer:
     def __init__(self):
         self.driver = webdriver.Chrome('chromedriver')
@@ -27,7 +28,7 @@ class Wspammer:
             self.driver.refresh()
 
     def spam_person(self, contact, message, times):
-        wait = WebDriverWait(self.driver,120)
+        wait = WebDriverWait(self.driver, 120)
         y_arg = '//*[@id="side"]/div[2]/div/label/input'
         input_y = wait.until(EC.presence_of_element_located((By.XPATH, y_arg)))
         input_y.send_keys(contact + Keys.ENTER)
@@ -36,10 +37,10 @@ class Wspammer:
         for i in range(int(times)):
             input_box.send_keys(message + Keys.ENTER)
 
-    def is_logged_in(self):
+    def is_logged_in(self, timegiven=60):
         check = self.storage.get("logout-token")
-        wait = WebDriverWait(self.driver,60)
-        if check!=None:
+        wait = WebDriverWait(self.driver, timegiven)
+        if check != None:
             try:
                 y_arg = '//*[@id="side"]/div[2]/div/label/input'
                 wait.until(EC.presence_of_element_located((By.XPATH, y_arg)))
@@ -48,6 +49,16 @@ class Wspammer:
                 print("either not connected to the internet,or is logged out")
                 return False
         else:
+            return False
+
+    def wait_till_login(self):
+        wait = WebDriverWait(self.driver,300)
+        try:
+            y_arg = '//*[@id="side"]/div[2]/div/label/input'
+            wait.until(EC.presence_of_element_located((By.XPATH, y_arg)))
+            return True
+        except TimeoutException:
+            print("either not connected to the internet,or is logged out")
             return False
 
 
