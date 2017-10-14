@@ -7,7 +7,6 @@ from selenium.common.exceptions import TimeoutException
 import pickle
 import json
 
-
 class Wspammer:
     def __init__(self):
         self.driver = webdriver.Chrome('chromedriver')

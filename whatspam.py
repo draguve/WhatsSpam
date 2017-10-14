@@ -1,4 +1,5 @@
 from Spammer import Wspammer
+import downloader
 from os import path
 
 ws = None
@@ -58,7 +59,6 @@ def ask_for_save():
                     ws.store_to_file(filename)
                     return None
 
-
 def ask_and_spam():
     target = raw_input("Enter target >>> ")
     message = raw_input("Enter message to send >>> ")
@@ -67,6 +67,7 @@ def ask_and_spam():
 
 
 if __name__ == '__main__':
+    downloader.check_for_driver()
     ws = Wspammer()
     filelog = login()
     if not(filelog):

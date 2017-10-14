@@ -8,3 +8,5 @@
 .idea/WebWhatsApp.iml
 *.ws
 *.exe
+*.pyc
+*.log
