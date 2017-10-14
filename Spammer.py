@@ -26,7 +26,7 @@ class Wspammer:
 
     def load_from_file(self, filename="default.ws"):
         if self.storage != None:
-            fileObject = open(filename, 'r')
+            fileObject = open(filename,'rb')
             storedict = pickle.load(fileObject)
             self.storage.setAll(storedict)
             self.driver.refresh()
@@ -140,10 +140,10 @@ class LocalStorage:
 
     def getAll(self):
         toReturn = {}
-        for key, value in self.get().items():
+        for key, value in list(self.get().items()):
             toReturn[key] = value
         return toReturn
 
     def setAll(self, allKeys):
-        for key, value in allKeys.iteritems():
+        for key, value in allKeys.items():
             self.set(key, value)

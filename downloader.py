@@ -1,4 +1,4 @@
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import os
 import zipfile
 import platform
@@ -6,11 +6,11 @@ from os import path
 
 def downloadFile(url):
     file_name = url.split('/')[-1]
-    u = urllib2.urlopen(url)
+    u = urllib.request.urlopen(url)
     f = open(file_name, 'wb')
     meta = u.info()
     file_size = int(meta.getheaders("Content-Length")[0])
-    print "Downloading: %s Bytes: %s" % (file_name, file_size)
+    print("Downloading: %s Bytes: %s" % (file_name, file_size))
 
     file_size_dl = 0
     block_sz = 8192
@@ -24,7 +24,7 @@ def downloadFile(url):
         status = r"%10d  [%3.2f%%]" % (
             file_size_dl, file_size_dl * 100. / file_size)
         status = status + chr(8) * (len(status) + 1)
-        print status,
+        print(status, end=' ')
     f.close()
 
 def extractAndDelete(file_name):
@@ -33,9 +33,9 @@ def extractAndDelete(file_name):
     os.remove(file_name)
 
 def check_if_agree(driverLoc):
-    print "Downloading Chrome Driver from " + driverLoc
-    print "Do you agree to the Download (y/n)"
-    ans = raw_input(">>>").lower()
+    print("Downloading Chrome Driver from " + driverLoc)
+    print("Do you agree to the Download (y/n)")
+    ans = input(">>>").lower()
     if(ans == 'y' or ans == 'Y'):
         return True
     else:
