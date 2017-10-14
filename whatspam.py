@@ -8,9 +8,9 @@ ws = None
 def login():
     selected = False
     while not(selected):
-        print("How do you want to login\n" + "1) Login Through QR Code\n" +
-              "2) Login Through Saved Session File")
-        choice = int(raw_input(">>>"))
+        print(("How do you want to login\n" + "1) Login Through QR Code\n" +
+              "2) Login Through Saved Session File"))
+        choice = int(input(">>>"))
         if choice == 1:
             selected = True
             print("Please Login With QR Code")
@@ -25,7 +25,7 @@ def login():
             filexist = False
             while not(filexist):
                 print("Please input filename for session file")
-                Filename = raw_input(">>>")
+                Filename = input(">>>")
                 if(path.exists(Filename)):
                     ws.load_from_file(Filename)
                     x = ws.is_logged_in()
@@ -46,13 +46,13 @@ def ask_for_save():
         print("Do you want to save the session in a file")
         print("1) Yes")
         print("2) No")
-        choice = int(raw_input(">>>"))
+        choice = int(input(">>>"))
         if choice == 2:
             return None
         elif choice == 1:
             while(True):
                 print("Please insert a name for the session file")
-                filename = raw_input(">>>")
+                filename = input(">>>")
                 if(path.exists(filename)):
                     print("file already exists please input a different name")
                 else:
@@ -60,9 +60,9 @@ def ask_for_save():
                     return None
 
 def ask_and_spam():
-    target = raw_input("Enter target >>> ")
-    message = raw_input("Enter message to send >>> ")
-    number = int(raw_input("How many times to spam >>> "))
+    target = input("Enter target >>> ")
+    message = input("Enter message to send >>> ")
+    number = int(input("How many times to spam >>> "))
     ws.spam_person(target, message, number)
 
 
