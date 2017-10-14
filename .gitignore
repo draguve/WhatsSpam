@@ -6,3 +6,5 @@
 .idea/modules.xml
 
 .idea/WebWhatsApp.iml
+*.ws
+*.exe
