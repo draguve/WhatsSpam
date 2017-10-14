@@ -4,8 +4,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
-import pickle
+import pickle , re , time
 import json
+import base64
+import io
+from matplotlib import pyplot as plt
+import matplotlib.image as mpimg
+
 
 class Wspammer:
     def __init__(self):
@@ -37,7 +42,7 @@ class Wspammer:
             input_box.send_keys(message + Keys.ENTER)
 
     def is_logged_in(self, timegiven=60):
-        check = self.storage.get("logout-token")
+        check = self.storage.get("WAToken1")
         wait = WebDriverWait(self.driver, timegiven)
         if check != None:
             try:
@@ -59,6 +64,46 @@ class Wspammer:
         except TimeoutException:
             print("either not connected to the internet,or is logged out")
             return False
+
+    def show_current_qr(self,src):
+        image64 = re.sub('^data:image/.+;base64,', '',src)
+        image64 = base64.b64decode(image64)
+        image64 = io.BytesIO(image64)
+        image64 = mpimg.imread(image64, format='JPG')
+        plt.ion()
+        fig = plt.figure()
+        plt.imshow(image64)
+        plt.show()
+        plt.pause(5.0)
+        return fig
+
+    def login_with_qr(self):
+        self.storage.clear()
+        self.driver.refresh()
+        currentsrc = None
+        currentfig = None
+        wait = WebDriverWait(self.driver,30)
+        while True:
+            if self.storage.get('WAToken1') == None:
+                reloadbutton = wait.until(EC.presence_of_element_located((By.XPATH,'//*[@id="app"]/div/div/div/div[1]/div[1]/div')))
+                if(reloadbutton.get_attribute('class') == "idle"):
+                    reloadbutton.click()
+                #imagelement = self.driver.find_element_by_xpath('//*[@id="app"]/div/div/div/div[1]/div[1]/div/img')
+                imagelement = wait.until(EC.presence_of_element_located((By.XPATH,'//*[@id="app"]/div/div/div/div[1]/div[1]/div/img')))
+                tmp = imagelement.get_attribute('src')
+                if currentsrc == tmp:
+                    time.sleep(1)
+                    continue
+                else:
+                    currentsrc = tmp
+                    if currentfig!=None:
+                        plt.close(currentfig)
+                    currentfig = self.show_current_qr(currentsrc)
+                    continue
+            else:
+                if currentfig!=None:
+                    plt.close(currentfig)
+                break
 
 
 class LocalStorage:

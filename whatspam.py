@@ -14,7 +14,7 @@ def login():
         if choice == 1:
             selected = True
             print("Please Login With QR Code")
-            print("waiting 5 minutes till reset")
+            ws.login_with_qr()
             x = ws.wait_till_login()
             if x:
                 return False
