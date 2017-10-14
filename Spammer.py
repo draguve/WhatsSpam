@@ -65,15 +65,19 @@ class Wspammer:
             print("either not connected to the internet,or is logged out")
             return False
 
-    def show_current_qr(self,src):
+    def show_current_qr(self,src,fig):
         image64 = re.sub('^data:image/.+;base64,', '',src)
         image64 = base64.b64decode(image64)
         image64 = io.BytesIO(image64)
         image64 = mpimg.imread(image64, format='JPG')
-        plt.ion()
-        fig = plt.figure()
-        plt.imshow(image64)
-        plt.show()
+        if fig==None:
+            plt.ion()
+            fig = plt.figure()
+            plt.imshow(image64)
+            plt.axis("off")
+            plt.show()
+        else:
+            plt.imshow(image64)
         plt.pause(5.0)
         return fig
 
@@ -88,7 +92,6 @@ class Wspammer:
                 reloadbutton = wait.until(EC.presence_of_element_located((By.XPATH,'//*[@id="app"]/div/div/div/div[1]/div[1]/div')))
                 if(reloadbutton.get_attribute('class') == "idle"):
                     reloadbutton.click()
-                #imagelement = self.driver.find_element_by_xpath('//*[@id="app"]/div/div/div/div[1]/div[1]/div/img')
                 imagelement = wait.until(EC.presence_of_element_located((By.XPATH,'//*[@id="app"]/div/div/div/div[1]/div[1]/div/img')))
                 tmp = imagelement.get_attribute('src')
                 if currentsrc == tmp:
@@ -97,8 +100,8 @@ class Wspammer:
                 else:
                     currentsrc = tmp
                     if currentfig!=None:
-                        plt.close(currentfig)
-                    currentfig = self.show_current_qr(currentsrc)
+                        plt.clf()
+                    currentfig = self.show_current_qr(currentsrc,currentfig)
                     continue
             else:
                 if currentfig!=None:
