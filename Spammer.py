@@ -32,14 +32,43 @@ class Wspammer:
             self.driver.refresh()
 
     def spam_person(self, contact, message, times):
-        wait = WebDriverWait(self.driver, 120)
-        y_arg = '//*[@id="side"]/div[2]/div/label/input'
-        input_y = wait.until(EC.presence_of_element_located((By.XPATH, y_arg)))
-        input_y.send_keys(contact + Keys.ENTER)
-        input_box = self.driver.find_element_by_xpath(
-            '//*[@id="main"]/footer/div[1]/div[2]/div/div[2]')
-        for i in range(int(times)):
-            input_box.send_keys(message + Keys.ENTER)
+        #wait = WebDriverWait(self.driver, 120)
+        #y_arg = '//*[@id="side"]/div[2]/div/label/input'
+        #input_y = wait.until(EC.presence_of_element_located((By.XPATH, y_arg)))
+        #input_y.send_keys(contact + Keys.ENTER)
+        input_box = self.get_contact(contact)
+        if input_box == None:
+            print("Could Not Find The Contact")
+        elif input_box == False:
+            print("People With The Same Name Found")
+        else:
+            for i in range(int(times)):
+                input_box.send_keys(message + Keys.ENTER)
+
+    def get_contact(self,contact):
+        wait = WebDriverWait(self.driver,120)
+        searchbox = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="side"]/div[2]/div/label/input')))
+        searchbox.clear()
+        searchbox.send_keys(contact)
+        #Waiting for Spinner
+        wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="side"]/div[2]/div/span/div')))
+        #Waiting for clearbutton
+        wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="side"]/div[2]/div/span/button')))
+        #Finding Chats
+        people = self.driver.find_elements_by_class_name("chat")
+        contacts = []
+        for person in people:
+            if person.get_attribute("class") == "chat":
+                contacts.append(person)
+        if len(contacts)==1:
+            searchbox.send_keys(Keys.ENTER)
+            return self.driver.find_element_by_xpath(
+                '//*[@id="main"]/footer/div[1]/div[2]/div/div[2]')
+        elif len(contacts)>1:
+            return False
+        else:
+            return None
+
 
     def is_logged_in(self, timegiven=60):
         check = self.storage.get("WAToken1")
