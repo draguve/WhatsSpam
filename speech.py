@@ -18,7 +18,8 @@ class sTT:
 		self.deviceID = deviceID
 		
 
-	def getInput(self):
+	def getInput(self, field):
+		print(field)
 		with sr.Microphone(device_index = self.deviceID, sample_rate = self.sampling_rate, chunk_size = self.chunk_size) as source:
 			self.r.adjust_for_ambient_noise(source)
 			print("listening....")
@@ -28,7 +29,7 @@ class sTT:
 				text = self.r.recognize_google(audio)
 				return text
 
-			except sr.UnknowValueError:
+			except sr.UnknownValueError:
 				print("Pardon...")
 
 			except sr.RequestError as e:

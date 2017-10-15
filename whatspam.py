@@ -1,9 +1,10 @@
 from Spammer import Wspammer
 import downloader
 from os import path
+from speech import sTT 
 
 ws = None
-
+jv = None
 
 def login():
     selected = False
@@ -60,15 +61,16 @@ def ask_for_save():
                     return None
 
 def ask_and_spam():
-    target = input("Enter target >>> ")
-    message = input("Enter message to send >>> ")
-    number = int(input("How many times to spam >>> "))
+    target = jv.getInput("Enter target >>> ")
+    message = jv.getInput("Enter message to send >>> ")
+    number = int(jv.getInput("How many times to spam >>> "))
     ws.spam_person(target, message, number)
 
 
 if __name__ == '__main__':
     downloader.check_for_driver()
     ws = Wspammer()
+    jv = sTT()
     filelog = login()
     if not(filelog):
         ask_for_save()
