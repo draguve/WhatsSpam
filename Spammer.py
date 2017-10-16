@@ -4,6 +4,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
 import pickle , re , time
 import json
 import base64
@@ -32,10 +34,6 @@ class Wspammer:
             self.driver.refresh()
 
     def spam_person(self, contact, message, times):
-        #wait = WebDriverWait(self.driver, 120)
-        #y_arg = '//*[@id="side"]/div[2]/div/label/input'
-        #input_y = wait.until(EC.presence_of_element_located((By.XPATH, y_arg)))
-        #input_y.send_keys(contact + Keys.ENTER)
         input_box = self.get_contact(contact)
         if input_box == None:
             print("Could Not Find The Contact")
@@ -69,6 +67,30 @@ class Wspammer:
         else:
             return None
 
+    def get_all_contacts(self):
+        wait = WebDriverWait(self.driver,60)
+        chatButton = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="side"]/header/div[2]/div/span/div[2]/button/span')))
+        chatButton.click()
+        contactBox=wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div/div/div[1]/span[1]/div/span/div/div[2]')))
+        reachedEnd = False
+        height = height = self.driver.find_element_by_xpath('//*[@id="app"]/div/div/div[1]/span[1]/div/span/div/div[2]/div[2]').size['height']
+        counter = 0
+        #to Load All Contacts On to the page
+        while(not(reachedEnd)):
+            self.driver.execute_script('arguments[0].scrollTop = ' + str(counter),contactBox)
+            counter = counter + 100
+            if counter >= height:
+                reachedEnd=True
+        contactElements = self.driver.find_elements_by_class_name("chat-title")
+        contactNames = []
+        for contactElement in contactElements:
+            try:
+                contactNames.append(contactElement.find_element_by_class_name("emojitext").text)
+            except NoSuchElementException:
+                print("")
+        chatButton = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div/div/div[1]/span[1]/div/span/div/header/div/div/button')))
+        chatButton.click()
+        return contactNames
 
     def is_logged_in(self, timegiven=60):
         check = self.storage.get("WAToken1")
