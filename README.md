@@ -5,7 +5,7 @@ WhatsSpam is a python script to Send Multiple WhatsApp Messages To A 'Friend' Or
 ### Usage : 
     python WhatsSpam.py
 
-### Dependences
+### Dependencies
 * [Python 2/3][python]
 * [Selienum][selenium]
 * [Chrome][chrome]
@@ -18,7 +18,7 @@ All contributions are welcome, from code to documentation to bug reports. Please
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 ### Disclaimer
-***I take no responsibility for any harm caused by this script. Have fun!***
+***I take no responsibility for any harm caused by the usage of this script. Have fun!***
 
 [selenium]: http://docopt.org/
 [python]:https://www.python.org/downloads/
