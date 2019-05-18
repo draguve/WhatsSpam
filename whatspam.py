@@ -8,7 +8,7 @@ def login():
     selected = False
     while not(selected):
         print(("How do you want to login\n" + "1) Login Through QR Code\n" +
-              "2) Login Through Saved Session File"))
+            "2) Login Through Saved Session File"))
         choice = int(input(">>>"))
         if choice == 1:
             selected = True
