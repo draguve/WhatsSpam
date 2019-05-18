@@ -10,3 +10,7 @@
 *.exe
 *.pyc
 *.log
+
+env/
+.vscode
+chromedriver

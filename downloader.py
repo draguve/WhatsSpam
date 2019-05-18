@@ -9,7 +9,10 @@ def downloadFile(url):
     u = urllib.request.urlopen(url)
     f = open(file_name, 'wb')
     meta = u.info()
-    file_size = int(meta.getheaders("Content-Length")[0])
+    ## getheader deprecated in python3, use get() instead for HTTPMessage
+    ## https://github.com/sklarsa/django-sendgrid-v5/pull/34
+    # file_size = int(meta.getheaders("Content-Length")[0])
+    file_size = int(meta.get("Content-Length")[0])
     print("Downloading: %s Bytes: %s" % (file_name, file_size))
 
     file_size_dl = 0
@@ -49,7 +52,11 @@ def check_for_driver():
     elif system == 'Linux':
         if(not(os.path.isfile('./chromedriver'))):
             downloadChromeDriver(system)
+    elif system == 'Darwin':
+        if(not(os.path.isfile('./chromedriver'))):
+            downloadChromeDriver(system)
     else:
+        print('The so is {0}'.format(system))
         print("Driver not available for your system")
         exit()
 
@@ -58,6 +65,8 @@ def downloadChromeDriver(system):
         filename = "chromedriver_win32.zip"
     elif system == "Linux":
         filename = "chromedriver_linux32.zip"
+    elif system == 'Darwin':
+        filename = "chromedriver_mac64.zip"
     downloadFile(
         "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
     latest = open("LATEST_RELEASE", "r")
